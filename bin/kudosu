@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "kudosu"
+require "json"
+
+
+def print_usage
+  puts <<-STR
+Usage: kudosu COMMAND
+Commands:
+  generate       prints a generated sudoku board
+  generate-json  prints a json representation of a generated sudoku board
+  solve NUMBERS  solves a puzzle, number should be a json array of sudoku numbers
+STR
+
+  exit
+end
+
+command = ARGV.shift
+
+
+print_usage unless %w(generate generate-json solve).include?(command)
+
+
+case command
+when "generate"
+  print_usage unless ARGV.none?
+  Kudosu.generate.print
+
+when "generate-json"
+  print_usage unless ARGV.none?
+  puts Kudosu.generate.values.to_json
+
+when "solve"
+  numbers = JSON.parse(STDIN.tty? ? ARGV.first : $stdin.read)
+  Kudosu.solve(numbers).print
+end
